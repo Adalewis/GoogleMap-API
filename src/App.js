@@ -17,9 +17,7 @@ class Google extends Component {
   componentDidMount() {
     fetch(`https://api.foursquare.com/v2/venues/search?ll=28.40952702,-81.52599822&client_id=CVQHABZYD4FCPP3T2F0GCDEV20IQ2IZ5FQTTUXIKKYRVHHQV&client_secret=ENJOUIH2KWFBWG0THLQG2WBCI0YCBNIYO4QOHGWCNFZEIKVJ&v=20180910&categoryId=4bf58dd8d48988d182941735&radius=2000000000&limit=5`)
       .then(response => response.json())
-      .catch(error => {
-        return Promise.reject(new Error('failed to load'))
-      })
+
       .then(response => response.response.venues)
       .then((data) => {
       const locations = data.map((location) => {
@@ -35,6 +33,13 @@ class Google extends Component {
         this.setState({showResults: this.state.locations})
       });
     })
+    .catch(error => {
+        alert(
+          "Sorry, an error occurred while trying to fetch data from Foursquare"
+
+        );
+      });
+
 }
 
 
@@ -79,25 +84,18 @@ class Google extends Component {
 
   render() {
 
-
-
-
-
     const Google = withGoogleMap(props => (
-
       <GoogleMap
         defaultCenter = { { lat: 28.40952702, lng: -81.52599822 } }
         defaultZoom = { 12 }
       >
       {this.state.showResults.map((location) => (
-
         <Marker
           key={location.id}
           position={{lat: location.lat, lng: location.lng}}
           animation={(location === this.state.windowPosition) ? window.google.maps.Animation.DROP : null}
           onClick={() => this.toggleInfo(location)}
         >
-
       </Marker>
       ))}
       {this.state.windowPosition.name &&
@@ -110,23 +108,27 @@ class Google extends Component {
         <div className='mark-description'>
           <p>{this.state.windowPosition.name}</p>
           <p>{this.state.windowPosition.address}</p>
+          <p>{"This information was provided by Foursquare API"}</p>
         </div>
       </InfoWindow>
     }
       </GoogleMap>
    ));
+
+
+
+
+
     return(
-      <div className="google-map">
+      <div className="google-map" role="main">
       <Google
         role="application"
         className="map"
         loadingElement={ <div style={{ height: `100%` }} /> }
         containerElement={ <div style={{ height: window.innerHeight, width: `70%` }} /> }
         mapElement={ <div style={{ height: `100%` }} /> }
-
       />
-      <div className="panel">
-        <div className="search">
+        <div className="search" role="search">
           <input
           className="search-box"
           aria-labelledby="filter"
@@ -147,13 +149,9 @@ class Google extends Component {
             </div>
           ))}
           </div>
-        </div>
       </div>
     </div>
-
-
     )
   }
 }
-
 export default Google
